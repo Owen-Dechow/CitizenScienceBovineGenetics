@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:cowflies/image_select.dart';
-import 'package:cowflies/on_start.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -18,6 +17,7 @@ class SubmitAnimalForm extends StatefulWidget {
     required this.onRetakeImage,
     required this.toggleSubmit,
     required this.prefs,
+    required,
   });
 
   @override
@@ -56,7 +56,6 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
           "cowValue": _cowValue == null ? "" : _cowValue.toString(),
           "lactationNumber":
               _lactationNumber == null ? "" : _lactationNumber.toString(),
-          "hadRingworm": _ringworm == null ? "" : _ringworm.toString(),
           "long": loc == null ? "" : loc.longitude.toString(),
           "lat": loc == null ? "" : loc.latitude.toString(),
         },
@@ -116,14 +115,6 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
 
   @override
   Widget build(BuildContext context) {
-    if (_softwareBackupSent == null) {
-      setState(() {
-        print(widget.prefs.getKeys());
-        _softwareBackupSent = widget.prefs.getBool(keySoftwareBackupSent);
-        print(widget.prefs.getBool(keySoftwareBackupSent));
-      });
-    }
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -189,8 +180,7 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
                     TextFormField(
                       decoration: InputDecoration(
                         labelText:
-                            "${_softwareBackupSent == false ? '*' : ''}Sire NAAB Code",
-                        hintText: "7HO12198",
+                            "${_softwareBackupSent == false ? '*' : ''}Sire Id/Name",
                       ),
                       autocorrect: false,
                       onChanged:
@@ -228,9 +218,6 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
 
                     /// Lactation #
                     DropdownButtonFormField(
-                      decoration: InputDecoration(
-                        labelText: "How many lactations has this animal had?",
-                      ),
                       items: [
                         DropdownMenuItem(
                           value: 0,
@@ -250,7 +237,11 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
                         ),
                         DropdownMenuItem(
                           value: 4,
-                          child: Text("4+ Lactations"),
+                          child: Text("Fourth Lactation"),
+                        ),
+                        DropdownMenuItem(
+                          value: 5,
+                          child: Text("5+ Lactations"),
                         ),
                       ],
                       onChanged:
@@ -267,21 +258,12 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
                     /// I like this cow / Ringworm
                     _lactationNumber == 0
                         ? DropdownButtonFormField(
-                          decoration: InputDecoration(
-                            labelText: "Has this animal had ringworm before?",
-                          ),
                           items: [
-                            DropdownMenuItem(value: 0, child: Text("No")),
-                            DropdownMenuItem(value: 1, child: Text("Yes")),
-                            DropdownMenuItem(
-                              value: 2,
-                              child: Text("Yes, many times"),
-                            ),
+                            DropdownMenuItem(child: Text("Yes"))
                           ],
-                          onChanged:
-                              (value) => setState(() {
-                                _ringworm = value;
-                              }),
+                          onChanged: (value) => setState(() {
+                            _ringworm = value;
+                          });,
                         )
                         : DropdownButtonFormField(
                           decoration: InputDecoration(

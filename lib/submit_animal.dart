@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:cowflies/image_select.dart';
 import 'package:cowflies/submit_animal_form.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SubmitAnimal extends StatefulWidget {
-  const SubmitAnimal({super.key});
+  final SharedPreferences prefs;
+  const SubmitAnimal({super.key, required this.prefs});
 
   @override
   State<SubmitAnimal> createState() => _SubmitAnimalState();
@@ -35,6 +37,7 @@ class _SubmitAnimalState extends State<SubmitAnimal> {
                         constraints: BoxConstraints(maxWidth: 400),
                         alignment: Alignment.center,
                         child: SubmitAnimalForm(
+                          prefs: widget.prefs,
                           image: _image!,
                           onRetakeImage:
                               () => setState(() {

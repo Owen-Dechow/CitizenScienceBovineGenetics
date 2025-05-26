@@ -115,15 +115,14 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (_softwareBackupSent == null) {
-      setState(() {
-        print(widget.prefs.getKeys());
-        _softwareBackupSent = widget.prefs.getBool(keySoftwareBackupSent);
-        print(widget.prefs.getBool(keySoftwareBackupSent));
-      });
-    }
+  void initState() {
+    super.initState();
 
+    _softwareBackupSent = widget.prefs.getBool(keySoftwareBackupSent);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -163,7 +162,7 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
                       },
                     ),
 
-                    /// Software backup / Sire id
+                    /// Software backup / Sire NAAB
                     DropdownButtonFormField(
                       decoration: InputDecoration(
                         labelText:

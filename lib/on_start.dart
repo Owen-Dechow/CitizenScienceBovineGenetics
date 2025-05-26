@@ -49,86 +49,96 @@ class _OnStartState extends State<OnStart> {
 
   Scaffold startScreen() {
     return Scaffold(
-      body: Center(
-        child: Container(
-          constraints: BoxConstraints(maxWidth: 400),
-          alignment: Alignment.topLeft,
-          child: SingleChildScrollView(
-            child: Column(
-              spacing: 10,
-              children: [
-                ExpansionTile(
-                  initiallyExpanded: true,
-                  title: Text("Software Backups"),
-                  children: [
-                    Padding(
-                      padding: EdgeInsetsGeometry.all(20),
-                      child: Column(
-                        children: [
-                          SelectableText(
-                            softwareBackups,
-                            textAlign: TextAlign.justify,
-                          ),
-                          DropdownButtonFormField(
-                            value: _softwareBackupSent,
-                            decoration: InputDecoration(
-                              labelText: "Did you send in a software backup?",
+      body: Padding(
+        padding: EdgeInsetsGeometry.all(20),
+        child: Center(
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 400),
+            alignment: Alignment.topLeft,
+            child: SingleChildScrollView(
+              child: Column(
+                spacing: 10,
+                children: [
+                  SizedBox(height: 40),
+                  ExpansionTile(
+                    initiallyExpanded: true,
+                    title: Text("Software Backups"),
+                    children: [
+                      Padding(
+                        padding: EdgeInsetsGeometry.all(20),
+                        child: Column(
+                          children: [
+                            SelectableText(
+                              softwareBackups,
+                              textAlign: TextAlign.justify,
                             ),
-                            onChanged:
-                                (value) => setState(() {
-                                  if (value != null) {
-                                    setState(() {
-                                      _softwareBackupSent = value;
-                                    });
-                                    _prefs?.setBool(
-                                      keySoftwareBackupSent,
-                                      value,
-                                    );
-                                  }
-                                }),
-                            items: [
-                              DropdownMenuItem(value: true, child: Text("Yes")),
-                              DropdownMenuItem(value: false, child: Text("No")),
-                            ],
-                          ),
-                        ],
+                            DropdownButtonFormField(
+                              value: _softwareBackupSent,
+                              decoration: InputDecoration(
+                                labelText: "Did you send in a software backup?",
+                              ),
+                              onChanged:
+                                  (value) => setState(() {
+                                    if (value != null) {
+                                      setState(() {
+                                        _softwareBackupSent = value;
+                                      });
+                                      _prefs?.setBool(
+                                        keySoftwareBackupSent,
+                                        value,
+                                      );
+                                    }
+                                  }),
+                              items: [
+                                DropdownMenuItem(
+                                  value: true,
+                                  child: Text("Yes"),
+                                ),
+                                DropdownMenuItem(
+                                  value: false,
+                                  child: Text("No"),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                ExpansionTile(
-                  initiallyExpanded: false,
-                  title: Text("Copyright (c) 2025 Owen Dechow"),
-                  children: [
-                    Padding(
-                      padding: EdgeInsetsGeometry.all(20),
-                      child: SelectableText(
-                        license,
-                        textAlign: TextAlign.justify,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  child: TextButton(
-                    style: buttonStyle,
-                    onPressed: () {
-                      _prefs?.setInt(
-                        keyLastInfoScreenShow,
-                        DateTime.now().millisecondsSinceEpoch,
-                      );
-                      setState(() {
-                        _showing = false;
-                      });
-                    },
-                    child: Text("Continue to $title"),
+                    ],
                   ),
-                ),
-                SelectableText(
-                  "You may return to this menu by selecting the (?) on the bottom of the app.",
-                ),
-              ],
+                  ExpansionTile(
+                    initiallyExpanded: false,
+                    title: Text("Copyright (c) 2025 Owen Dechow"),
+                    children: [
+                      Padding(
+                        padding: EdgeInsetsGeometry.all(20),
+                        child: SelectableText(
+                          license,
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                      style: buttonStyle,
+                      onPressed: () {
+                        _prefs?.setInt(
+                          keyLastInfoScreenShow,
+                          DateTime.now().millisecondsSinceEpoch,
+                        );
+                        setState(() {
+                          _showing = false;
+                        });
+                      },
+                      child: Text("Continue to $title"),
+                    ),
+                  ),
+                  SelectableText(
+                    "You may return to this menu by selecting the (?) on the bottom of the app.",
+                  ),
+                ],
+              ),
             ),
           ),
         ),

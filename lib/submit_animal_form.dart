@@ -33,6 +33,7 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
   int? _cowValue;
   int? _lactationNumber;
   int? _ringworm;
+  bool _side = true;
 
   submit() async {
     widget.toggleSubmit();
@@ -147,6 +148,7 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
                   spacing: 10.0,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SelectableText("* = required field."),
                     TextFormField(
                       decoration: InputDecoration(labelText: "*Animal Id/Name"),
                       autocorrect: false,
@@ -163,29 +165,6 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
                       },
                     ),
 
-                    /// Software backup / Sire NAAB
-                    DropdownButtonFormField(
-                      decoration: InputDecoration(
-                        labelText:
-                            "*Did you send a software backup for your farm?",
-                      ),
-                      value: _softwareBackupSent,
-                      onChanged:
-                          (value) => setState(() {
-                            _softwareBackupSent = value ?? false;
-                          }),
-                      items: [
-                        DropdownMenuItem(value: true, child: Text("Yes")),
-                        DropdownMenuItem(value: false, child: Text("No")),
-                      ],
-                      validator: (value) {
-                        if (value == null) {
-                          return "This field is required.";
-                        }
-
-                        return null;
-                      },
-                    ),
                     TextFormField(
                       decoration: InputDecoration(
                         labelText:
@@ -207,10 +186,27 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
                       },
                     ),
 
+                    DropdownButtonFormField(
+                      decoration: InputDecoration(
+                        labelText:
+                            "Is this a picture of the animal's side or face.",
+                      ),
+                      value: _side,
+                      items: [
+                        DropdownMenuItem(value: true, child: Text("Side")),
+                        DropdownMenuItem(value: false, child: Text("Face")),
+                      ],
+                      onChanged:
+                          (value) => setState(() {
+                            _side = value ?? true;
+                          }),
+                    ),
+
                     /// How many flies are on this cow
                     DropdownButtonFormField(
                       decoration: InputDecoration(
-                        labelText: "How many flies does this animal have?",
+                        labelText:
+                            "How many flies does this animal have on its ${_side ? 'side' : 'body'}?",
                       ),
                       value: _cowFlies,
                       items: const [

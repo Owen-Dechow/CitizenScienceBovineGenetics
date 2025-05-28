@@ -61,6 +61,7 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
           "long": loc == null ? "" : loc.longitude.toString(),
           "lat": loc == null ? "" : loc.latitude.toString(),
           "timestamp": DateTime.now().toIso8601String(),
+          "sideImage": _side.toString(),
         },
       );
 

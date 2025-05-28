@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cowflies/image_select.dart';
 import 'package:cowflies/main.dart';
 import 'package:cowflies/submit_animal.dart';
@@ -33,6 +31,8 @@ Software backups can be sent to $softwareBackupsEmail
 """;
 
 class OnStart extends StatefulWidget {
+  const OnStart({super.key});
+
   @override
   State<OnStart> createState() => _OnStartState();
 }

@@ -1,18 +1,22 @@
-import 'dart:io';
-import 'package:cowflies/image_select.dart';
-import 'package:cowflies/on_start.dart';
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' show File;
 
-class SubmitAnimalForm extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart'
+    show Position, Geolocator, LocationPermission;
+import 'package:http/http.dart'
+    show StreamedResponse, MultipartRequest, MultipartFile;
+import 'package:shared_preferences/shared_preferences.dart'
+    show SharedPreferences;
+
+import 'const.dart' show buttonStyle, keyEmail, keySoftwareBackupSent;
+
+class CowFliesSubmitForm extends StatefulWidget {
   final File image;
   final Function() onRetakeImage;
-  final Function() toggleSubmit;
+  final Function(bool) toggleSubmit;
   final SharedPreferences prefs;
 
-  const SubmitAnimalForm({
+  const CowFliesSubmitForm({
     super.key,
     required this.image,
     required this.onRetakeImage,
@@ -21,22 +25,22 @@ class SubmitAnimalForm extends StatefulWidget {
   });
 
   @override
-  State<SubmitAnimalForm> createState() => _SubmitAnimalFormState();
+  State<CowFliesSubmitForm> createState() => _CowFliesSubmitFormState();
 }
 
-class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
+class _CowFliesSubmitFormState extends State<CowFliesSubmitForm> {
+  final _formKey = GlobalKey<FormState>();
   String? _animalId;
   bool? _softwareBackupSent;
   String? _sireId;
   int? _cowFlies;
-  final _formKey = GlobalKey<FormState>();
   int? _cowValue;
   int? _lactationNumber;
   int? _ringworm;
   bool _side = true;
 
   submit() async {
-    widget.toggleSubmit();
+    widget.toggleSubmit(true);
 
     if (_formKey.currentState!.validate()) {
       final contextR = context;
@@ -62,15 +66,17 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
           "lat": loc == null ? "" : loc.latitude.toString(),
           "timestamp": DateTime.now().toIso8601String(),
           "sideImage": _side.toString(),
+          "DBTarget": "cowflies",
+          "email": widget.prefs.getString(keyEmail) ?? "",
         },
       );
 
-      http.MultipartRequest request = http.MultipartRequest("POST", uri);
+      MultipartRequest request = MultipartRequest("POST", uri);
       request.files.add(
-        await http.MultipartFile.fromPath("image", widget.image.path),
+        await MultipartFile.fromPath("image", widget.image.path),
       );
 
-      http.StreamedResponse response = await request.send();
+      StreamedResponse response = await request.send();
 
       if (response.statusCode != 200) {
         if (contextR.mounted) {
@@ -94,7 +100,7 @@ class _SubmitAnimalFormState extends State<SubmitAnimalForm> {
       }
     }
 
-    widget.toggleSubmit();
+    widget.toggleSubmit(false);
   }
 
   Future<Position?> getLocation() async {

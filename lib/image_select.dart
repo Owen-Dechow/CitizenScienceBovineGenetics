@@ -1,21 +1,21 @@
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'dart:io' show File;
 
-final buttonStyle = IconButton.styleFrom(
-  backgroundColor: Colors.red,
-  foregroundColor: Colors.white,
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(Radius.circular(5)),
-  ),
-);
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart' show ImagePicker, ImageSource;
+
+import 'const.dart' show buttonStyle;
 
 class PickImageScreen extends StatelessWidget {
   final Function(File) onImgSelected;
   final _picker = ImagePicker();
   final _width = 200.0;
+  final String subtitle;
 
-  PickImageScreen({super.key, required this.onImgSelected});
+  PickImageScreen({
+    super.key,
+    required this.onImgSelected,
+    required this.subtitle,
+  });
 
   pickImage() async {
     final img = await _picker.pickImage(source: ImageSource.gallery);
@@ -40,6 +40,7 @@ class PickImageScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text("Select Image", textScaler: TextScaler.linear(2.0)),
+            Text(subtitle),
             SizedBox(
               width: _width,
               child: Column(

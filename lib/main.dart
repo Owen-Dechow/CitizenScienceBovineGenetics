@@ -1,7 +1,7 @@
-import 'package:cowflies/on_start.dart';
+import 'package:cowflies/page_manager.dart' show PageManager;
 import 'package:flutter/material.dart';
 
-const title = "Cow Flies";
+import 'const.dart' show appTitle;
 
 void main() {
   runApp(const MainApp());
@@ -12,6 +12,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: title, home: OnStart());
+    return MaterialApp(title: appTitle, home: PageManager());
   }
 }

@@ -1,245 +1,212 @@
-import 'package:cowflies/image_select.dart';
-import 'package:cowflies/main.dart';
-import 'package:cowflies/submit_animal.dart';
+import 'package:cowflies/const.dart'
+    show
+        buttonStyle,
+        fliesTitle,
+        geneticsTitle,
+        keyEmail,
+        keyLastInfoScreenShow,
+        keySoftwareBackupSent,
+        license,
+        softwareBackups,
+        privacyStatement;
+import 'package:cowflies/page_manager.dart' show Screen;
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-const keySoftwareBackupSent = "softwareBackupSent";
-const keyLastInfoScreenShow = "lastInfoScreenShow";
-const keyEmail = "email";
-
-const license = """
-MIT License
-
-Copyright (c) 2025 Owen Dechow
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-""";
-
-const softwareBackupsEmail = "john.doe@gmail.com";
-
-const softwareBackups = """
-Lorem ipsum
-
-Lorem ipsum dolor sit amit Lorem ipsum dolor sit amit Lorem ipsum dolor sit amit Lorem ipsum dolor sit amit Lorem ipsum dolor sit amit Lorem ipsum dolor sit amit Lorem ipsum dolor sit amit Lorem ipsum dolor sit amit Lorem ipsum dolor sit amit Lorem ipsum dolor sit amit Lorem ipsum dolor sit amit Lorem ipsum dolor sit amit Lorem ipsum dolor sit amit
-
-Software backups can be sent to $softwareBackupsEmail
-""";
+import 'package:shared_preferences/shared_preferences.dart'
+    show SharedPreferences;
 
 class OnStart extends StatefulWidget {
-  const OnStart({super.key});
+  final SharedPreferences prefs;
+  final Function(Screen) setPage;
+  final bool softwareBackupInitialOpen;
+  const OnStart({
+    super.key,
+    required this.prefs,
+    required this.setPage,
+    required this.softwareBackupInitialOpen,
+  });
 
   @override
   State<OnStart> createState() => _OnStartState();
 }
 
 class _OnStartState extends State<OnStart> {
-  bool? _showing;
-  SharedPreferences? _prefs;
-  bool _softwareBackupSent = false;
+  bool? _softwareBackupSent;
   String? _email;
   final _formKey = GlobalKey<FormState>();
 
-  setPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
+  @override
+  void initState() {
+    super.initState();
+
     setState(() {
-      _prefs = prefs;
-      _softwareBackupSent = prefs.getBool(keySoftwareBackupSent) ?? false;
-      _email = prefs.getString(keyEmail);
+      _softwareBackupSent = widget.prefs.getBool(keySoftwareBackupSent);
+      _email = widget.prefs.getString(keyEmail);
     });
   }
 
-  Scaffold startScreen() {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsetsGeometry.all(20),
-        child: Center(
-          child: Container(
-            constraints: BoxConstraints(maxWidth: 400),
-            alignment: Alignment.topLeft,
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  spacing: 10,
-                  children: [
-                    SizedBox(height: 40),
-                    Expanded(child: SelectableText("* = required field.")),
-                    ExpansionTile(
-                      initiallyExpanded: true,
-                      title: Text("Software Backups"),
-                      children: [
-                        Padding(
-                          padding: EdgeInsetsGeometry.all(20),
-                          child: Column(
-                            children: [
-                              SelectableText(
-                                softwareBackups,
-                                textAlign: TextAlign.justify,
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 400),
+          padding: EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                spacing: 10,
+                children: [
+                  SizedBox(height: 40),
+                  SelectableText("* = required field."),
+                  ExpansionTile(
+                    initiallyExpanded: widget.softwareBackupInitialOpen,
+                    title: Text("Software Backups"),
+                    children: [
+                      Padding(
+                        padding: EdgeInsetsGeometry.all(20),
+                        child: Column(
+                          children: [
+                            SelectableText(
+                              softwareBackups,
+                              textAlign: TextAlign.justify,
+                            ),
+                            DropdownButtonFormField(
+                              value: _softwareBackupSent,
+                              decoration: InputDecoration(
+                                labelText:
+                                    "*Did you send in a software backup?",
                               ),
-                              DropdownButtonFormField(
-                                value: _softwareBackupSent,
-                                decoration: InputDecoration(
-                                  labelText:
-                                      "*Did you send in a software backup?",
+                              onChanged:
+                                  (value) => setState(() {
+                                    if (value != null) {
+                                      setState(() {
+                                        _softwareBackupSent = value;
+                                      });
+                                      widget.prefs.setBool(
+                                        keySoftwareBackupSent,
+                                        value,
+                                      );
+                                    }
+                                  }),
+                              items: [
+                                DropdownMenuItem(
+                                  value: true,
+                                  child: Text("Yes"),
                                 ),
-                                onChanged:
-                                    (value) => setState(() {
-                                      if (value != null) {
-                                        setState(() {
-                                          _softwareBackupSent = value;
-                                        });
-                                        _prefs?.setBool(
-                                          keySoftwareBackupSent,
-                                          value,
-                                        );
-                                      }
-                                    }),
-                                items: [
-                                  DropdownMenuItem(
-                                    value: true,
-                                    child: Text("Yes"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: false,
-                                    child: Text("No"),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                DropdownMenuItem(
+                                  value: false,
+                                  child: Text("No"),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    ExpansionTile(
-                      initiallyExpanded: false,
-                      title: Text("Copyright (c) 2025 Owen Dechow"),
-                      children: [
-                        Padding(
-                          padding: EdgeInsetsGeometry.all(20),
-                          child: SelectableText(
-                            license,
-                            textAlign: TextAlign.justify,
-                          ),
-                        ),
-                      ],
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        labelText:
-                            "${_softwareBackupSent == true ? "*" : ""}Email",
                       ),
-                      initialValue: _email,
-                      keyboardType: TextInputType.emailAddress,
-                      onChanged: (value) {
-                        setState(() {
-                          _email = value;
-                        });
-
-                        _prefs?.setString(keyEmail, _email!);
-                      },
-                      validator: (value) {
-                        if (_softwareBackupSent == true) {
-                          if (value == null || value == "") {
-                            return "You must provide a valid email if you are sending in a software backup.";
-                          }
-                        }
-
-                        if (value != null && value != "") {
-                          if (!RegExp(
-                            r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$',
-                          ).hasMatch(value)) {
-                            return "Invalid email. You do not need to send in email if you are not sending in software backup.";
-                          }
-                        }
-
-                        return null;
-                      },
+                    ],
+                  ),
+                  ExpansionTile(
+                    initiallyExpanded: false,
+                    title: Text("Copyright (c) 2025 Owen Dechow"),
+                    children: [
+                      Padding(
+                        padding: EdgeInsetsGeometry.all(20),
+                        child: SelectableText(
+                          license,
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ],
+                  ),
+                  ExpansionTile(
+                    initiallyExpanded: false,
+                    title: Text("Data Privacy Statement"),
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(20),
+                        child: SelectableText(
+                          privacyStatement,
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ],
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText:
+                          "${_softwareBackupSent == true ? "*" : ""}Email",
                     ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                        style: buttonStyle,
-                        onPressed: () {
-                          _prefs?.setInt(
+                    initialValue: _email,
+                    keyboardType: TextInputType.emailAddress,
+                    onChanged: (value) {
+                      setState(() {
+                        _email = value;
+                      });
+
+                      widget.prefs.setString(keyEmail, _email!);
+                    },
+                    validator: (value) {
+                      if (_softwareBackupSent == true) {
+                        if (value == null || value == "") {
+                          return "You must provide a valid email if you are sending in a software backup.";
+                        }
+                      }
+
+                      if (value != null && value != "") {
+                        if (!RegExp(
+                          r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$',
+                        ).hasMatch(value)) {
+                          return "Invalid email. You do not need to send in email if you are not sending in software backup.";
+                        }
+                      }
+
+                      return null;
+                    },
+                  ),
+                  SelectableText(
+                    "This email will be used to send research updates and sire PTAs.",
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                      style: buttonStyle,
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          widget.prefs.setInt(
                             keyLastInfoScreenShow,
                             DateTime.now().millisecondsSinceEpoch,
                           );
-                          setState(() {
-                            if (_formKey.currentState!.validate()) {
-                              _showing = false;
-                            }
-                          });
-                        },
-                        child: Text("Continue to $title"),
-                      ),
+                          widget.setPage(Screen.cowflies);
+                        }
+                      },
+                      child: Text("Continue to $fliesTitle"),
                     ),
-                    SelectableText(
-                      "You may return to this menu by selecting the (?) on the bottom of the app.",
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: TextButton(
+                      style: buttonStyle,
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          widget.prefs.setInt(
+                            keyLastInfoScreenShow,
+                            DateTime.now().millisecondsSinceEpoch,
+                          );
+                          widget.setPage(Screen.geneticIssue);
+                        }
+                      },
+                      child: Text("Continue to $geneticsTitle"),
                     ),
-                  ],
-                ),
+                  ),
+                  SelectableText(
+                    "You may return to this menu by selecting the (?) on the bottom of the app.",
+                  ),
+                ],
               ),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_prefs == null) {
-      setPrefs();
-    }
-
-    if (_showing == null && _prefs != null) {
-      setState(() {
-        final lastShown = _prefs!.getInt(keyLastInfoScreenShow);
-        if (lastShown == null) {
-          _showing = true;
-        } else if (DateTime.now()
-            .subtract(Duration(days: 180))
-            .isAfter(DateTime.fromMillisecondsSinceEpoch(lastShown))) {
-          _showing = true;
-        } else {
-          _showing = false;
-        }
-      });
-    }
-
-    return Scaffold(
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          spacing: 10,
-          children: [
-            Text(
-              "$title | Created by Owen Dechow",
-              style: TextStyle(fontSize: 14),
-            ),
-            IconButton(
-              style: buttonStyle,
-              onPressed: () {
-                setState(() {
-                  _showing = true;
-                });
-              },
-              icon: Icon(Icons.question_mark_rounded),
-            ),
-          ],
-        ),
-      ),
-      body:
-          _showing == null
-              ? null
-              : _showing!
-              ? startScreen()
-              : SubmitAnimal(prefs: _prefs!),
     );
   }
 }

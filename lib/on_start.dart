@@ -40,6 +40,12 @@ class _OnStartState extends State<OnStart> {
 
     setState(() {
       _softwareBackupSent = widget.prefs.getBool(keySoftwareBackupSent);
+
+      if (_softwareBackupSent == null) {
+        widget.prefs.setBool(keySoftwareBackupSent, false);
+        _softwareBackupSent = false;
+      }
+
       _email = widget.prefs.getString(keyEmail);
     });
   }

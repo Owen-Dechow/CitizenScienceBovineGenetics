@@ -27,7 +27,7 @@ class _GeneticIssueState extends State<GeneticIssue> {
           _image == null
               ? PickImageScreen(
                 subtitle:
-                    "Select image of animal that may have genetic disablity, disease, or anomily.",
+                    "Select image of animal that may have genetic disablity, disease, or abnormality.",
                 onImgSelected: (file) {
                   setState(() {
                     _image = file;

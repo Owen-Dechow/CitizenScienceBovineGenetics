@@ -1,10 +1,11 @@
 import 'dart:io' show File;
 
+import 'package:cowflies/url.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart'
     show Position, Geolocator, LocationPermission;
 import 'package:http/http.dart'
-    show StreamedResponse, MultipartRequest, MultipartFile;
+    show MultipartFile, MultipartRequest, Response, StreamedResponse;
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
@@ -50,9 +51,7 @@ class _CowFliesSubmitFormState extends State<CowFliesSubmitForm> {
 
       final loc = await getLocation();
 
-      final uri = Uri.parse(
-        "https://hiddenstring",
-      ).replace(
+      final uri = Uri.parse(serverUrl).replace(
         queryParameters: {
           "animalId": _animalId,
           "softwareBackupSent": _softwareBackupSent.toString(),

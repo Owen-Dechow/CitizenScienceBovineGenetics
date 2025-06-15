@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
 
 import 'const.dart' show buttonStyle, keySoftwareBackupSent, keyEmail;
+import 'url.dart' show serverUrl;
 
 class GeneticIssueSubmitForm extends StatefulWidget {
   final File image;
@@ -33,6 +34,7 @@ class _GeneticIssueSubmitFormState extends State<GeneticIssueSubmitForm> {
   String? _animalId;
   String? _sireId;
   bool? _softwareBackupSent;
+  String? _desc;
 
   Future<Position?> getLocation() async {
     if (!await Geolocator.isLocationServiceEnabled()) {
@@ -64,9 +66,7 @@ class _GeneticIssueSubmitFormState extends State<GeneticIssueSubmitForm> {
       ).showSnackBar(const SnackBar(content: Text("Submitting")));
 
       final loc = await getLocation();
-      final uri = Uri.parse(
-        "https://hiddenstring",
-      ).replace(
+      final uri = Uri.parse(serverUrl).replace(
         queryParameters: {
           "animalId": _animalId,
           "softwareBackupSent": _softwareBackupSent.toString(),
@@ -76,6 +76,7 @@ class _GeneticIssueSubmitFormState extends State<GeneticIssueSubmitForm> {
           "timestamp": DateTime.now().toIso8601String(),
           "DBTarget": "geneticAnomily",
           "email": widget.prefs.getString(keyEmail) ?? "",
+          "desc": _desc,
         },
       );
 
@@ -147,25 +148,17 @@ class _GeneticIssueSubmitFormState extends State<GeneticIssueSubmitForm> {
                   children: [
                     SelectableText("* = required field."),
                     TextFormField(
-                      decoration: InputDecoration(labelText: "*Animal Id/Name"),
+                      decoration: InputDecoration(labelText: "Animal Id/Name"),
                       autocorrect: false,
                       onChanged: (value) {
                         setState(() {
                           _animalId = value;
                         });
                       },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "This field is required.";
-                        }
-                        return null;
-                      },
                     ),
-
                     TextFormField(
                       decoration: InputDecoration(
-                        labelText:
-                            "${_softwareBackupSent == false ? '*' : ''}Sire NAAB Code",
+                        labelText: "*Sire NAAB Code",
                         hintText: "7HO12198",
                       ),
                       autocorrect: false,
@@ -175,9 +168,24 @@ class _GeneticIssueSubmitFormState extends State<GeneticIssueSubmitForm> {
                           }),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          if (_softwareBackupSent == false) {
-                            return "This field is required if software backup is not sent.";
-                          }
+                          return "This field is required.";
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: "*Description of issue",
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLines: null,
+                      onChanged:
+                          (value) => setState(() {
+                            _desc = value;
+                          }),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "This field is required.";
                         }
                         return null;
                       },
